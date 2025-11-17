@@ -36,7 +36,7 @@ module.exports = grammar({
         $._string_end,
     ],
 
-    extras: $ => [/[\n]/, /\s/, $.comment],
+    extras: $ => [/\n/, /\s/, $.comment],
 
     inline: $ => [
         $._expression,
@@ -132,7 +132,7 @@ module.exports = grammar({
 
         boolean: _ => choice("true", "false"),
 
-        number: $ => {
+        number: () => {
             const decimal_digits = /[0-9]+/;
             const signed_integer = seq(optional(choice("-", "+")), decimal_digits);
             const decimal_exponent_part = seq(choice("e", "E"), signed_integer);
@@ -246,7 +246,7 @@ module.exports = grammar({
                 )
             ),
 
-        // TODO: Fix that one test
+        // Fix that one test
         // variable_declaration: ($) =>
         //     prec.right(
         //         PREC.PRIORITY,
@@ -393,7 +393,7 @@ module.exports = grammar({
             prec(
                 PREC.PRIORITY,
                 seq(
-                    // TODO: Decide if we really want to keep these...
+                    // Decide if we really want to keep these...
                     //          It will be useful when we want to highlight them
                     //          in a particular color for people :)
                     field(
@@ -448,7 +448,7 @@ module.exports = grammar({
         _string_call: $ =>
             field(
                 "args",
-                // TODO: Decide if this is really the name we want to use.
+                //  Decide if this is really the name we want to use.
                 alias($.string, $.string_argument)
             ),
 
@@ -492,11 +492,11 @@ module.exports = grammar({
                 seq(
                     /\s*---@brief \[\[/,
                     any_amount_of(/\s*---/, $.documentation_brief),
-                    /\s*---@brief \]\]/
+                    /\s*---@brief ]]/
                 )
             ),
 
-        documentation_command_content: $ => /[^\n\[]*/,
+        documentation_command_content: () => /[^\n\[]*/,
         documentation_command: $ =>
             prec.right(
                 PREC.PROGRAM,
@@ -513,12 +513,12 @@ module.exports = grammar({
                             field("documentation", $.documentation_command_content)
                         )
                     ),
-                    /\s*---@command \]\]/
+                    /\s*---@command ]]/
                 )
             ),
 
         emmy_ignore: () => /---\n/,
-        emmy_comment: $ =>
+        emmy_comment: () =>
             token(prec.right(repeat1(choice(/---[^@\n]*\n/, /---\n/)))),
 
         emmy_type_array: $ => seq(field("type", $._emmy_type), "[]"),
@@ -624,7 +624,7 @@ module.exports = grammar({
                 field("type", $._emmy_type),
                 optional(")"),
 
-                // TODO: How closely should we be to emmy...
+                // How closely should we be to emmy...
                 optional(seq(/\s*:?\s*/, field("description", $.parameter_description))),
                 /\n\s*/
             ),
@@ -645,14 +645,14 @@ module.exports = grammar({
                 /\s+/,
                 field("type", $._emmy_type),
 
-                // TODO: How closely should we be to emmy...
+                // How closely should we be to emmy...
                 optional(seq(/\s*:\s*/, field("description", $.field_description))),
                 /\n\s*/
             ),
 
         emmy_visibility: () => choice("public", "protected", "private"),
 
-        _multiline_emmy_string: $ =>
+        _multiline_emmy_string: () =>
             prec.right(
                 PREC.PRIORITY,
                 seq(/[^\n]+/, repeat(/\s*---[^\n]*/))
@@ -662,11 +662,11 @@ module.exports = grammar({
         class_description: $ => $._multiline_emmy_string,
         field_description: $ => $._multiline_emmy_string,
 
-        // TODO(conni2461): Pretty sure that doesn't work as expected
+        // (conni2461): Pretty sure that doesn't work as expected
         parameter_description: $ => $._multiline_emmy_string,
 
         // emmy_return_description: ($) => $._multiline_emmy_string,
-        emmy_return_description: $ => /[^\n]*/,
+        emmy_return_description: () => /[^\n]*/,
 
         emmy_return: $ =>
             seq(
@@ -680,7 +680,7 @@ module.exports = grammar({
                     )
                 )
 
-                // TODO: This feels a bit weird, because it seems like maybe whitespace
+                // This feels a bit weird, because it seems like maybe whitespace
                 // could break this, but I will leave it for now because it makes me happy.
                 // choice(
                 //     prec.right(

@@ -2,6 +2,8 @@
 #include <wctype.h>
 #include <stdio.h>
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 enum TokenType {
   BLOCK_COMMENT_START,
   BLOCK_COMMENT_CONTENT,
